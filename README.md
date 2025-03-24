@@ -24,12 +24,3 @@ cd wifi-security-analyzer
 
 # Install requirements
 pip install -r requirements.txt
-
-# Basic network scan
-sudo python3 wifi_security_analyzer.py -i wlan0 -t 30
-
-# Security check for a specific network
-sudo python3 wifi_security_analyzer.py -i wlan0 -t 30 --check --bssid 00:11:22:33:44:55
-
-# Save results to CSV
-sudo python3 wifi_security_analyzer.py -i wlan0 -t 30 -o scan_results.csv
