@@ -1,0 +1,32 @@
+Basic Network Scan
+Perform a basic scan for 30 seconds:
+sudo python3 wifi_security_analyzer.py -i wlan0 -t 30
+
+Extended Scan with CSV Export
+Scan for 2 minutes and save results to a file:
+sudo python3 wifi_security_analyzer.py -i wlan0 -t 120 -o scan_results.csv
+
+Security Assessment of Your Network
+First, run a scan to discover your network:
+sudo python3 wifi_security_analyzer.py -i wlan0 -t 30
+
+Note your network's BSSID from the results, then run a security check:
+sudo python3 wifi_security_analyzer.py -i wlan0 -t 30 --check --bssid 00:11:22:33:44:55
+
+Replace 00:11:22:33:44:55 with your actual network's BSSID.
+
+Understanding the Results
+The tool provides these key pieces of information:
+
+BSSID: The MAC address of the access point
+SSID: The network name
+Channel: The Wi-Fi channel being used
+Encryption: The security protocol (Open, WEP, WPA, WPA2)
+Signal: Signal strength in dBm
+Vulnerabilities: Any detected security issues
+
+When running a security check with --check, you'll receive:
+
+Detailed assessment of the network's security
+Specific vulnerabilities that were detected
+Actionable recommendations to improve security
