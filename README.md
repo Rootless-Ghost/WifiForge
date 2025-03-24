@@ -55,14 +55,9 @@ iwconfig
 networksetup -listallhardwareports
 ```
 
+Ethical Use
 
-
-
-
-
-
-
-
+This tool is designed for educational purposes and for testing networks you own or have explicit permission to test. Unauthorized network scanning may be illegal in your jurisdiction.
 
 
 ## Features in Development
