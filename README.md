@@ -26,6 +26,45 @@ cd wifi-security-analyzer
 pip install -r requirements.txt
 
 ```
+## Basic Usage
+
+The Wireless Network Security Analyzer is a command-line tool with several options for scanning and analyzing wireless networks.
+
+### Command Line Options
+wifi_security_analyzer.py [-h] -i INTERFACE [-t TIME] [-o OUTPUT] [--check] [--bssid BSSID]
+
+Wireless Network Security Analyzer optional arguments:
+-h, --help            show this help message and exit
+-i INTERFACE, --interface INTERFACE
+Wireless interface to use
+-t TIME, --time TIME  Scan time in seconds (default: 60)
+-o OUTPUT, --output OUTPUT
+Output file for scan results (CSV format)
+--check               Check security of your own network
+--bssid BSSID         BSSID of your network to check (required with --check)
+
+### Finding Your Wireless Interface
+
+Before running the tool, you need to know the name of your wireless interface:
+
+```bash
+# On Linux
+iwconfig
+
+# On macOS
+networksetup -listallhardwareports
+```
+
+
+
+
+
+
+
+
+
+
+
 ## Features in Development
 
 - [ ] WPA3 security assessment
