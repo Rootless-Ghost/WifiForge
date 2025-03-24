@@ -24,3 +24,20 @@ cd wifi-security-analyzer
 
 # Install requirements
 pip install -r requirements.txt
+
+```
+## Features in Development
+
+- [ ] WPA3 security assessment
+- [ ] Automated penetration testing (on your own networks only)
+- [ ] GUI interface
+- [ ] Network mapping visualization
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## Acknowledgments
+
+- The Scapy development team for their excellent network manipulation tool
+- [List any resources or inspirations that helped you]
