@@ -55,11 +55,6 @@ iwconfig
 networksetup -listallhardwareports
 ```
 
-## Ethical Use
-
-This tool is designed for educational purposes and for testing networks you own or have explicit permission to test. Unauthorized network scanning may be illegal in your jurisdiction.
-
-
 ## Features in Development
 
 - [ ] WPA3 security assessment
@@ -75,3 +70,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 - The Scapy development team for their excellent network manipulation tool
 - [List any resources or inspirations that helped you]
+
+## Ethical Use
+
+This tool is designed for educational purposes and for testing networks you own or have explicit permission to test. Unauthorized network scanning may be illegal in your jurisdiction.
