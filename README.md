@@ -1,3 +1,4 @@
+[![Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)](https://www.python.org/downloads/)
 # Wireless Network Security Analyzer
 
 A tool for analyzing and assessing the security of wireless networks that you own or have permission to test.
