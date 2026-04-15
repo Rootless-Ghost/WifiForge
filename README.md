@@ -41,8 +41,10 @@ WifiForge upgrades passive WiFi scanning from raw packet capture to structured s
 ![Dashboard](docs/screenshots/WifiForge-Dashboard.png)
 
 
-![Export Options](docs/screenshots/export-options.png)  
-*LogNorm NDJSON export with ATT&CK technique mapping*
+![MockMode](docs/screenshots/WifiForge-MockMode.png)  
+
+
+![MockMode-Results](docs/screenshots/WifiForge-Results.png)  
 
 ---
 
