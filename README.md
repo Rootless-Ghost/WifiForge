@@ -38,8 +38,8 @@ WifiForge upgrades passive WiFi scanning from raw packet capture to structured s
 
 ## Screenshots
 
-![Search Results](docs/screenshots/search-results.png)
-*Live network scan with encryption detection and severity scoring*
+![Dashboard](docs/screenshots/WifiForge-Dashboard.png)
+
 
 ![Export Options](docs/screenshots/export-options.png)  
 *LogNorm NDJSON export with ATT&CK technique mapping*
