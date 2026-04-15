@@ -1,3 +1,5 @@
+<div align="center">
+
 # WifiForge
  
 **Wireless Network Security Analyzer | Nebula Forge Detection Suite v2**
@@ -12,6 +14,8 @@ WifiForge passively scans wireless networks, assesses security posture, detects 
 ---
  
 ## Overview
+
+</div>
  
 WifiForge upgrades passive WiFi scanning from raw packet capture to structured security intelligence. Every detected network is assessed for vulnerabilities — open encryption, WEP, WPS exposure, deauth activity, hidden SSIDs — and mapped to ATT&CK techniques for downstream detection workflows.
  
