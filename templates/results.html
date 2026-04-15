@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Results — WifiForge{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Scan Results</h1>
+  <a href="/" class="btn btn-secondary btn-sm">&#8592; New Scan</a>
+</div>
+
+{% if mock %}
+<div class="alert alert-warning">
+  &#9888; No wireless interface detected — results below are mock data for UI testing.
+</div>
+{% endif %}
+
+<!-- Summary bar -->
+<div class="summary-bar">
+  <div class="summary-stat">
+    <span class="summary-num">{{ total }}</span>
+    <span class="summary-label">Total Networks</span>
+  </div>
+  <div class="summary-stat">
+    <span class="summary-num danger">{{ open_count }}</span>
+    <span class="summary-label">Open Networks</span>
+  </div>
+  <div class="summary-stat">
+    <span class="summary-num warning">{{ wps_count }}</span>
+    <span class="summary-label">WPS Enabled</span>
+  </div>
+  <div class="summary-stat">
+    <span class="summary-num danger">{{ deauth_count }}</span>
+    <span class="summary-label">Deauth Detected</span>
+  </div>
+</div>
+
+<!-- Export bar -->
+{% if networks %}
+<div class="export-bar">
+  <span class="export-label">Export:</span>
+  <button class="btn btn-accent btn-sm" id="btnLognorm">
+    &#128229; LogNorm NDJSON
+  </button>
+  <span id="exportStatus" class="export-status"></span>
+</div>
+{% endif %}
+
+<!-- Results table -->
+{% if networks %}
+<div class="card table-card">
+  <div class="table-wrapper">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>SSID</th>
+          <th>BSSID</th>
+          <th>Ch</th>
+          <th>RSSI</th>
+          <th>Encryption</th>
+          <th>WPS</th>
+          <th>Severity</th>
+          <th>ATT&amp;CK</th>
+          <th>Findings</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for net in networks %}
+        <tr>
+          <td class="ssid-cell">
+            {% if net.hidden %}
+              <span class="muted mono">&lt;hidden&gt;</span>
+            {% elif net.ssid %}
+              {{ net.ssid }}
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+            {% if net.deauth %}
+              <span class="flag-badge flag-deauth" title="Deauth frames detected">DEAUTH</span>
+            {% endif %}
+          </td>
+          <td class="mono muted bssid-cell">{{ net.bssid }}</td>
+          <td class="mono">{{ net.channel if net.channel is not none else '—' }}</td>
+          <td class="mono rssi-cell">
+            {% if net.rssi is not none %}
+              <span class="rssi rssi-{{ net.rssi | rssi_class }}">{{ net.rssi }} dBm</span>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="enc-badge enc-{{ net.encryption | lower }}">{{ net.encryption }}</span>
+          </td>
+          <td class="center">
+            {% if net.wps %}
+              <span class="flag-badge flag-wps">WPS</span>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="sev-badge sev-{{ net.severity | lower }}">{{ net.severity }}</span>
+          </td>
+          <td>
+            {% for t in net.attck_techniques %}
+            <span class="attck-badge tactic-{{ t.tactic | tactic_class }}"
+                  title="{{ t.tactic }}">{{ t.technique_id }}</span>
+            {% else %}
+            <span class="muted">—</span>
+            {% endfor %}
+          </td>
+          <td class="findings-cell">
+            <ul class="findings-list">
+              {% for f in net.findings %}
+              <li>{{ f }}</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">&#128246;</div>
+  <div class="empty-title">No networks found</div>
+  <div class="empty-desc">Run a scan from the scanner page to discover nearby networks.</div>
+  <a href="/" class="btn btn-primary mt-4">Start Scan</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  const btnLognorm = document.getElementById('btnLognorm');
+  if (!btnLognorm) return;
+
+  function setStatus(msg, cls) {
+    const el = document.getElementById('exportStatus');
+    el.textContent = msg;
+    el.className = 'export-status ' + (cls || '');
+    setTimeout(() => { el.textContent = ''; el.className = 'export-status'; }, 5000);
+  }
+
+  btnLognorm.addEventListener('click', function () {
+    btnLognorm.disabled = true;
+    fetch('/export/lognorm', {method: 'POST'})
+      .then(r => {
+        if (!r.ok) throw new Error('Export failed');
+        return r.blob();
+      })
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'wififorge_lognorm.ndjson';
+        a.click();
+        URL.revokeObjectURL(url);
+        setStatus('NDJSON downloaded.', 'status-ok');
+      })
+      .catch(e => setStatus('Export error: ' + e.message, 'status-err'))
+      .finally(() => { btnLognorm.disabled = false; });
+  });
+})();
+</script>
+{% endblock %}

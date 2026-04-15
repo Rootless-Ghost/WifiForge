@@ -32,6 +32,14 @@ var/
 ehthumbs.db
 Thumbs.db
 
+# Environment / secrets
+.env
+venv/
+ENV/
+
+# Logs
+*.log
+
 # IDE/Editor folders
 .idea/
 .vscode/

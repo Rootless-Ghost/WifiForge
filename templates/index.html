@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}WifiForge{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">WifiForge</h1>
+  <p class="page-subtitle">Wireless Network Security Analyzer | Nebula Forge</p>
+</div>
+
+{% if mock_mode %}
+<div class="alert alert-mock">
+  &#9888; MOCK MODE ACTIVE &mdash; toggle off for live scanning
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Passive Scanner</h2>
+  </div>
+  <div class="card-body">
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="interfaceSelect">Wireless Interface</label>
+        <select class="form-select" id="interfaceSelect">
+          {% if interfaces %}
+            {% for iface in interfaces %}
+            <option value="{{ iface }}">{{ iface }}</option>
+            {% endfor %}
+          {% else %}
+            <option value="mock">No interface detected — mock mode</option>
+          {% endif %}
+        </select>
+        {% if not interfaces %}
+        <div class="form-hint">No wireless interfaces found. Scan will use mock data for UI testing.</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="durationInput">Scan Duration (seconds)</label>
+        <input class="form-input mono" type="number" id="durationInput"
+               value="60" min="10" max="300">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" id="btnStart">
+        <span class="btn-icon">&#9654;</span> Start Scan
+      </button>
+      <button class="btn btn-danger" id="btnStop" disabled>
+        <span class="btn-icon">&#9632;</span> Stop
+      </button>
+      <a href="/results" class="btn btn-secondary">
+        <span class="btn-icon">&#128202;</span> View Results
+      </a>
+      <label class="toggle-label" title="Load mock data instead of scanning live hardware">
+        <span class="toggle-text">Mock Mode</span>
+        <button type="button" class="toggle-switch {% if mock_mode %}active{% endif %}"
+                id="btnMockToggle" aria-pressed="{{ 'true' if mock_mode else 'false' }}">
+          <span class="toggle-thumb"></span>
+        </button>
+      </label>
+    </div>
+
+  </div>
+</div>
+
+<!-- Status card -->
+<div class="card" id="statusCard">
+  <div class="card-body">
+    <div class="scan-status">
+      <div class="status-indicator" id="statusIndicator">
+        <div class="status-dot" id="scanDot"></div>
+        <span id="statusText">Idle — no scan running</span>
+      </div>
+      <div class="network-counter" id="networkCounter" style="display:none">
+        <span class="counter-num" id="counterNum">0</span>
+        <span class="counter-label">networks found</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Requirements note -->
+<div class="info-grid">
+  <div class="info-card">
+    <div class="info-icon accent">LNX</div>
+    <div>
+      <div class="info-title">Linux</div>
+      <div class="info-desc">Requires root + monitor mode:<br><code>sudo airmon-ng start &lt;iface&gt;</code></div>
+    </div>
+  </div>
+  <div class="info-card">
+    <div class="info-icon warning">WIN</div>
+    <div>
+      <div class="info-title">Windows</div>
+      <div class="info-desc">Requires Npcap and admin privileges. Run <code>python app.py</code> as Administrator.</div>
+    </div>
+  </div>
+  <div class="info-card">
+    <div class="info-icon success">MAC</div>
+    <div>
+      <div class="info-title">macOS</div>
+      <div class="info-desc">Requires root privileges:<br><code>sudo python app.py</code></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  let polling = null;
+
+  const btnStart   = document.getElementById('btnStart');
+  const btnStop    = document.getElementById('btnStop');
+  const scanDot    = document.getElementById('scanDot');
+  const statusText = document.getElementById('statusText');
+  const counter    = document.getElementById('networkCounter');
+  const counterN   = document.getElementById('counterNum');
+  const btnMock    = document.getElementById('btnMockToggle');
+
+  function setScanning(active) {
+    btnStart.disabled = active;
+    btnStop.disabled  = !active;
+    if (active) {
+      scanDot.classList.add('online');
+      statusText.textContent = 'Scanning…';
+      counter.style.display = 'flex';
+    } else {
+      scanDot.classList.remove('online');
+      counter.style.display = 'none';
+    }
+  }
+
+  function pollResults() {
+    fetch('/scan/results')
+      .then(r => r.json())
+      .then(d => {
+        counterN.textContent = d.count;
+        if (!d.scanning) {
+          clearInterval(polling);
+          polling = null;
+          setScanning(false);
+          statusText.textContent = `Scan complete — ${d.count} network(s) found. `;
+          const link = document.createElement('a');
+          link.href = '/results';
+          link.className = 'inline-link';
+          link.textContent = 'View results →';
+          statusText.appendChild(link);
+        }
+      })
+      .catch(() => null);
+  }
+
+  btnStart.addEventListener('click', function () {
+    const iface    = document.getElementById('interfaceSelect').value;
+    const duration = parseInt(document.getElementById('durationInput').value, 10) || 60;
+
+    fetch('/scan/start', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({interface: iface, duration: duration}),
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) { statusText.textContent = 'Error: ' + d.error; return; }
+      setScanning(true);
+      polling = setInterval(pollResults, 3000);
+    })
+    .catch(e => { statusText.textContent = 'Error: ' + e.message; });
+  });
+
+  btnStop.addEventListener('click', function () {
+    fetch('/scan/stop', {method: 'POST'})
+      .then(() => {
+        if (polling) { clearInterval(polling); polling = null; }
+        setScanning(false);
+        statusText.textContent = 'Scan stopped.';
+      });
+  });
+
+  // Mock mode toggle — POST then reload so banner and button state update from server
+  if (btnMock) {
+    btnMock.addEventListener('click', function () {
+      fetch('/mock/toggle', {method: 'POST', redirect: 'follow'})
+        .then(() => { window.location.href = '/'; });
+    });
+  }
+})();
+</script>
+{% endblock %}
