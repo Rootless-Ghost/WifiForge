@@ -156,10 +156,6 @@ WifiForge is intended for authorized security testing of networks you own or hav
 
 - [ ] WPA3 security assessment
 
-## Responsible Use
- 
-WifiForge is intended for authorized security testing of networks you own or have explicit written permission to test. Passive scanning may still be regulated in some jurisdictions. Unauthorized wireless scanning may violate laws and regulations.
-
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
