@@ -48,12 +48,6 @@ WifiForge upgrades passive WiFi scanning from raw packet capture to structured s
 
 ---
 
-## Requirements
-
-- Python 3
-- Root privileges (needed for monitor mode)
-- Wireless interface that supports monitor mode
-
 ## Part of Nebula Forge
  
 WifiForge is part of [Nebula Forge](https://github.com/Rootless-Ghost/Nebula-Forge) — an open-source SOC platform covering the full detection engineering workflow.
