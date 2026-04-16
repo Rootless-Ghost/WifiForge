@@ -8,10 +8,14 @@ Usage: python app.py
 
 import io
 import logging
+import os
 import sys
 import uuid
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, send_file, url_for
+
+load_dotenv()
 
 from core.scanner import WifiScanner, list_interfaces
 from core.analyzer import assess_all
@@ -51,7 +55,7 @@ def _tactic_class(tactic: str) -> str:
 # ── Flask app ──────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
-app.secret_key = "wififorge-nebula-2026"
+app.secret_key = os.environ.get("SECRET_KEY", "wififorge-dev-secret")
 app.config["MOCK_MODE"] = False
 app.jinja_env.filters["rssi_class"]   = _rssi_class
 app.jinja_env.filters["tactic_class"] = _tactic_class
