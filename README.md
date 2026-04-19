@@ -85,6 +85,28 @@ Access at `http://localhost:5013`
  
 ---
 
+## Docker (Nebula Forge suite)
+
+This tool runs as a containerized service in the Nebula Forge suite.
+The recommended way to start everything together:
+
+```bash
+# From the Nebula-Forge repo root
+cp .env.example .env          # add secrets (NVD_API_KEY, ATOMICLOOP_API_KEY, etc.)
+docker compose up -d          # starts all services including wififorge
+```
+
+**Access:** http://localhost:5013
+
+**Standalone container:**
+```bash
+docker build -t wififorge .
+docker run -p 5013:5013 \
+  wififorge
+```
+
+---
+
 ## Usage
  
 ### Web UI
