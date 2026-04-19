@@ -187,6 +187,7 @@ def export_lognorm_route():
 
 
 @app.get("/health")
+@app.get("/api/health")
 def health():
     return jsonify({"status": "ok", "tool": "WifiForge", "port": 5013})
 
