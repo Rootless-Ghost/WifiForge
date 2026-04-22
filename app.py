@@ -55,7 +55,7 @@ def _tactic_class(tactic: str) -> str:
 # ── Flask app ──────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "wififorge-dev-secret")
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 app.config["MOCK_MODE"] = False
 app.jinja_env.filters["rssi_class"]   = _rssi_class
 app.jinja_env.filters["tactic_class"] = _tactic_class
