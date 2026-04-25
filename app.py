@@ -60,6 +60,15 @@ app.config["MOCK_MODE"] = False
 app.jinja_env.filters["rssi_class"]   = _rssi_class
 app.jinja_env.filters["tactic_class"] = _tactic_class
 
+
+@app.after_request
+def _set_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
+
+
 _scanner = WifiScanner()
 _last_raw_snapshot: list = []
 _last_assessed: list = []
