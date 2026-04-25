@@ -61,6 +61,8 @@ app.jinja_env.filters["rssi_class"]   = _rssi_class
 app.jinja_env.filters["tactic_class"] = _tactic_class
 
 _scanner = WifiScanner()
+_last_raw_snapshot: list = []
+_last_assessed: list = []
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
@@ -133,8 +135,14 @@ def scan_stop():
 
 @app.get("/scan/results")
 def scan_results():
+    global _last_raw_snapshot, _last_assessed
     raw = _scanner.results()
-    assessed = assess_all(raw)
+    if raw == _last_raw_snapshot:
+        assessed = _last_assessed
+    else:
+        assessed = assess_all(raw)
+        _last_assessed = assessed
+        _last_raw_snapshot = raw
     return jsonify({
         "scanning": _scanner.scanning,
         "mock": app.config["MOCK_MODE"],
